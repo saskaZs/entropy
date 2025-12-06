@@ -2,6 +2,7 @@
 
 This React project is an interactive 3D/AR physics simulation that visualizes how entropy evolves in a closed system. Inside a cubic box, red and blue particles bounce around with zero gravity; their spatial mixing is sampled on a grid to compute a total entropy value, which is displayed both as a desktop HUD overlay and, in AR mode, as a floating panel above the cube. Users can view the simulation on a normal screen with orbit controls or enter an immersive AR session where the cube appears in front of the camera.
 
+[▶ Watch the demo](assets/entropy.mp4)
 
 
 ### Physical Basis of the Simulation
