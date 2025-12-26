@@ -1,71 +1,85 @@
-## ENTROPY
+# 🔴🔵 ENTROPY – Interactive Entropy Simulation
 
-This React project is an interactive 3D/AR physics simulation that visualizes how entropy evolves in a closed system. Inside a cubic box, red and blue particles bounce around with zero gravity; their spatial mixing is sampled on a grid to compute a total entropy value, which is displayed both as a desktop HUD overlay and, in AR mode, as a floating panel above the cube. Users can view the simulation on a normal screen with orbit controls or enter an immersive AR session where the cube appears in front of the camera.
+An educational 3D (and AR-capable) simulation demonstrating the **irreversible increase of entropy** in a closed system, inspired by the classic thought experiment of mixing two types of gas particles.
 
+Red and blue particles bounce elastically inside a cubic box with no external forces. Over time, they mix irreversibly — entropy rises from near zero (ordered/separated state) to maximum (fully mixed).
+
+The simulation calculates and displays **Shannon entropy** in real-time based on spatial distribution, making the Second Law of Thermodynamics visually intuitive.
 
 
 https://github.com/user-attachments/assets/32f4d57f-5a2d-4c55-a09e-de479ab7d7e9
 
 
-### Running the project
-
-1. **Download the project**
-  Either clone the repository `git clone https://github.com/saskaZs/entropy.git` or download it as a ZIP and extract it.
-  Go into the code folder `cd entropy/code`
-  
-2. **Install dependencies**
-Make sure you have Node.js, then run `npm install`
-
-3. **Run the development server**
-`npm run dev`
-   
 ---
-The simulation implements a **simplified gas-in-a-box model** combined with a **discrete Shannon-entropy calculation** for the mixing of two particle “species” (red and blue).
 
-#### 1. Particle Dynamics
+## 🚀 Features
 
-Each particle has a **position** `x(t)` and **velocity** `v(t)`.
-
-Between collisions, motion follows Newton’s equations of motion with no external forces:
-
-- `v(t + dt) = v(t)`
-- `x(t + dt) = x(t) + v(t) * dt`
-
-Particles move inside a rigid cubic container represented by static colliders represented by the six walls.  
-When a particle hits a wall, the physics engine applies a perfectly elastic collision: the component of the velocity vector along the wall normal is flipped, while the tangential components are preserved.
-
-In vector form, you can think of it as:
-
-- `v' = v - 2 * (v · n) * n`
-
-where `n` is the unit normal vector of the wall.
-
-Collisions between particles are treated as collisions of equal-mass rigid bodies, approximately conserving momentum and kinetic energy.
-
-At the microscopic level, this behaves like a hard-sphere gas in a box with elastic bounces.
+- **Realistic Physics:** Elastic collisions between particles and walls (conservation of momentum and energy).
+- **Entropy Calculation:** Space divided into 3D grid cells; Shannon entropy computed from red/blue ratios per cell.
+- **Real-Time HUD:** Current entropy value displayed (desktop) or floating panel (AR).
+- **AR Support:** View the simulation in augmented reality on supported devices.
+- **Adjustable Parameters:** Particle count, speed, box size, grid resolution (configurable in code).
+- **No External Forces:** Purely statistical mechanics — demonstrates spontaneous entropy increase.
 
 ---
 
-#### 2. Entropy Calculation
+## 📂 Project Structure
+`eslint.config.js`            # ESLint configuration for code quality and React hooks
+`index.html`                  # HTML entry point with meta, Launchar SDK script, and root div
+`package.json`                # Dependencies (R3F, Rapier, XR, stdlib gammaln) and scripts
+`package-lock.json`           # Locked dependency versions
 
-The cube is subdivided into a regular 3D grid of cells. On each animation frame:
+`main.jsx`                # React entry: renders <App /> with StrictMode
+`index.css`               # Global styles for layout and dark theme
+`App.jsx`                 # Main app: XR store, Canvas setup, Physics, ParticleContainer, EntropyGrid, AR button
 
-1. For every cell `c`, count how many red and blue particles it contains:  
-   - `n_red,c`, `n_blue,c`  
-   - total: `n_c = n_red,c + n_blue,c`
+`EntropyGrid.jsx`     # Grid visualization and entropy calculation (uses gammaln for ln!)
+`ParticleContainer.jsx` # Particle spawning, RigidBody setup, position polling for entropy
 
-2. If `n_c > 0`, compute local probabilities:
-   - `p_red,c = n_red,c / n_c`  
-   - `p_blue,c = n_blue,c / n_c`
+---
 
-3. Compute the local Shannon entropy of mixing for each cell:
+## 🧠 Theoretical Background
 
-   - `S_c = - ( p_red,c * ln(p_red,c) + p_blue,c * ln(p_blue,c) )`  
-   - with the convention that `p * ln(p) = 0` when `p = 0`.
+This simulation visualizes one of the most profound concepts in physics: **the Second Law of Thermodynamics**.
 
-4. Aggregate over all non-empty cells to obtain the total entropy:
+### 1. Macrostate vs. Microstate
+- Initially, all red particles on one side, blue on the other → highly ordered **macrostate**.
+- Many possible **microstates** (particle positions/velocities) correspond to separated state → low multiplicity.
+- Fully mixed state has vastly more microstates → high multiplicity.
 
-   - `S_total = (1 / N_cells*) * Σ_c S_c`  
+### 2. Entropy Definition (Boltzmann)
+$$ S = k \cdot \ln W $$
+- $k$: Boltzmann constant
+- $W$: number of microstates corresponding to the macrostate
 
-   where `N_cells*` is the number of non-empty cells. `S_total` increases as the system becomes more mixed.
+Higher $W$ → higher entropy. The system naturally evolves toward states with maximum $W$.
+
+### 3. Shannon Entropy (Used in Simulation)
+Since exact $W$ is computationally infeasible, we approximate using **spatial Shannon entropy**:
+$$ H = - \sum_{i} p_i \log_2 p_i $$
+- Grid divides space into cells.
+- $p_i$: fraction of red (or blue) particles in cell $i$.
+- Averaged over all cells → global entropy measure.
+
+$H = 0$ when particles are perfectly separated (pure cells).  
+$H = 1$ (maximum) when perfectly mixed (50/50 in every cell).
+
+### 4. Irreversibility
+Even though individual collisions are time-reversible, the overwhelming statistical preference for high-entropy states makes return to ordered state practically impossible.
+
+This is why "unmixing" gases spontaneously never happens — even though it's not forbidden by Newton's laws.
+
+---
+
+## 📦 Installation & Running
+
+### Prerequisites
+- Node.js (v16+ recommended)
+
+### Steps
+```bash
+cd code/entropy
+npm install
+npm run dev
+```
 
