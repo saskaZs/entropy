@@ -56,7 +56,7 @@ Higher $W$ → higher entropy. The system naturally evolves toward states with m
 
 ### 3. Shannon Entropy (Used in Simulation)
 Since exact $W$ is computationally infeasible, we approximate using **spatial Shannon entropy**: <br>
-$ H = - \sum_{i} p_i \log_2 p_i $
+$$H = - \sum_{i} p_i \log_2 p_i$$
 - Grid divides space into cells.
 - $p_i$: fraction of red (or blue) particles in cell $i$.
 - Averaged over all cells → global entropy measure.
